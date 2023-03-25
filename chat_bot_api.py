@@ -1,6 +1,6 @@
 import openai
 
-openai.api_key = "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"
+openai.api_key = #enter you own api key
 
 
 def generateChatResponse(prompt):
