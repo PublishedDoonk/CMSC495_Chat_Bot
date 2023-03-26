@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <!--calling in style sheet-->
+    <link rel = 'stylesheet' href ="{{ url_for('static', filename='styles/style.css')}}">
+</head>
+<body>
+    <div class="Login">
+    <h1>Login Page</h1>
+    <h3>You must log in to enter this website!</h3>
+
+    <!--calling in picture-->
+    <img src={{ url_for('static', filename='lightening.jpg')}} alt='Lightening' style='width:500px;height:500px;'>
+
+    <!--creating links to login and register pages-->
+    <div class="links">
+        <a href = "{{ url_for('login')}}" class="active">Login</a>
+        <a href = "{{ url_for('register')}}">Register</a>
+    </div>
+
+    <!--creating action to send information/save it-->
+    <form action="{{ url_for('login')}}" method="post">
+
+        <!--creating spaces for username and password entry-->
+        <label for ="username"><b>Username</b></label>
+        <input type="text" id="username" name="username" placeholder="Username" required>
+        <br>
+        <label for="password"><b>Password</b></label>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <div class="message">{{ message }}</div>
+            <br>
+            <input type ="submit" value="Login">
+    </form>
+    </div>
+</body>
+</html>

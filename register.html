@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Page</title>
+
+    <!--calling in style sheet-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}">
+</head>
+<body>
+
+    <!--calling in picture-->
+    <img src={{ url_for('static', filename='rome.jpg')}} atl='Rome' width='400' height='500' style='float:right;'>
+    <div class="register">
+        <h1>Registration Form</h1>
+
+	<!--links for the registration and login pages-->
+        <div class ="links">
+            <a href="{{ url_for('login')}}">Login</a>
+            <a href="{{ url_for('register')}}" class="active">Register</a>
+        </div>
+
+	<!--telling the program that I want to send/post this information(store it)-->
+    <form action="{{ url_for('register')}}" method="post">
+
+            <p>Please enter your information to register.</p>
+	    <br>
+	    <p>The username can only use numbers and letters!</p>
+	    <br>
+	    <p>The password must be at least 12 digits long, contain uppercase, lowercase, numbers and symbols!<p>
+            <hr>
+
+	    <!--creating fields so that the user may enter the required information-->
+            <label for="username"><b>Username</b></label>
+            <input type="text" placeholder="Username" name="username" id="username" required>
+            <label for="password"><b>Password</b></label>
+            <input type="text" placeholder="Password" name="password" id="password" required>
+            <div class ="message">{{message}}</div>
+            <input type="submit" value="Register">
+
+
+    </form>
+    </div>
+        
+    </form>
+</body>
+</html>
