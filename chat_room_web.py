@@ -22,10 +22,10 @@ app.secret_key = 'LetMeIn'
 #This information will need to be updated for your personal stuff
 
 #confinguring python to connect to the database
-app.config['MYSQL_HOST'] = 
-app.config['MYSQL_USER'] = 
-app.config['MYSQL_PASSWORD'] = 
-app.config['MYSQL_DB'] = 
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'Fuckyou12@1' #left blank due to it being my personal password
+app.config['MYSQL_DB'] = 'kiel_ott_lab7' 
 mysql = MySQL(app)
 
 
@@ -106,7 +106,7 @@ parameters"""
 @app.route('/Kiel_Ott_Chat/index2', methods=['GET', 'POST'])
 def index2():
     
-    if request.method == "POST":
+    if request.method == "POST" and 'loggedin' in session:
         prompt = request.form['prompt']
         res = {}
         
@@ -114,8 +114,8 @@ def index2():
         return jsonify(res), 200
         
     return render_template('index2.html')
-
-@app.route('/kiel_ott_lab8/logout')
+                                             
+@app.route('/Kiel_Ott_Chat/logout')
 def logout():
     """this method will allow for log out and return to restricted access"""
 
