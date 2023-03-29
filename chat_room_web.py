@@ -86,7 +86,19 @@ parameters"""
         exists = cursor.fetchone()
         if exists:
             message = "that account already exists"
+        #using regular expression to check username is valid
+        elif not re.match(r'[A-Za-z0-9]*$', username):
+            message= 'Username must contain only letters and numbers!'
 
+        #checking any new registration against the list
+        elif not check_list(password):
+            message = "That is a commonly used password and is not valid!"
+
+        #using password check function to make sure password is valid
+        elif not password_check(password):
+            message= ('The password must contain lowercase, uppercase, symbols,'
+            'and numbers and be at least 12 characters long!')
+            
         #if everything checks out it will save the informatin into the SQL database
         #will use SQL to insert the username and password into a running
         #database and redirect to login once registered
@@ -125,6 +137,33 @@ def logout():
 
     return redirect(url_for('login'))
 
-           
+def check_list(password):
+    """This method will open and read the common password file and check
+    any new password entered against it"""
+
+    #opeing and reading file and closing it
+    with open ("static/CommonPassword.txt", "r", encoding="utf-8") as f_read:
+        reader = f_read.readlines()
+        f_read.close()
+        check = True
+
+    #using a for loop to check the list
+        for item in reader:
+            if password == item.strip():
+                check = False
+    return check
+def password_check(password):
+    """This method will check that the password is within required specs"""
+
+    len_error = len(password) < 12
+    digit_error = re.search(r"\d", password) is None
+    upper_error = re.search(r"[A-Z]", password) is None
+    lower_error = re.search(r"[a-z]", password) is None
+    symbol_error = re.search(r"\W", password) is None
+    password_ok = not(len_error or digit_error or upper_error or
+                      lower_error or symbol_error)
+
+    return password_ok
+
 if __name__== '__main__':
     app.run(debug=True, port=5000)
