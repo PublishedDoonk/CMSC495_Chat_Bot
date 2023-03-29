@@ -22,10 +22,10 @@ app.secret_key = 'LetMeIn'
 #This information will need to be updated for your personal stuff
 
 #confinguring python to connect to the database
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Fuckyou12@1' #left blank due to it being my personal password
-app.config['MYSQL_DB'] = 'kiel_ott_lab7' 
+app.config['MYSQL_HOST'] = 
+app.config['MYSQL_USER'] = 
+app.config['MYSQL_PASSWORD'] = #left blank due to it being my personal password
+app.config['MYSQL_DB'] = 
 mysql = MySQL(app)
 
 
