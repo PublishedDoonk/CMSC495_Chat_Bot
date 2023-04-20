@@ -4,8 +4,10 @@ import logging
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import openai
 import chat_bot_api
-from flask_mysqldb import MySQL
-import MySQLdb.cursors
+import pymysql
+import pymysql.cursors
+import dbconnection
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -22,12 +24,13 @@ app.secret_key = 'LetMeIn'
 #This information will need to be updated for your personal stuff
 
 #confinguring python to connect to the database
-app.config['MYSQL_HOST'] = ''
-app.config['MYSQL_USER'] = ''
-app.config['MYSQL_PASSWORD'] = '' #left blank due to it being my personal password
-app.config['MYSQL_DB'] = '' 
-mysql = MySQL(app)
 
+try:
+    db = pymysql.connect(host="cmscfinal.cwzwx03ifxje.us-east-1.rds.amazonaws.com",
+                     user="GroupControl", password="Fr29sM5!!Y",database="cmscfinal")
+    cursor = db.cursor()
+except ClientError as e:
+    print("Bad connect")
 
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
@@ -47,13 +50,10 @@ def login():
         language = request.form['language'] #User Selected Language Variable to be Passed to the Prompt
         key = request.form['api-key']  #API KEY Variable
 
-
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = %s and passwords = %s',
-        (username, password))
-        
+        sql = "SELECT * FROM accounts WHERE username = %s and passwords = %s"
+        cursor.execute(sql, (username, password,))
         account = cursor.fetchone()
-
+        
         #using the session to confirm login and allow access to webpages.
         #Session will restrict access if not logged in
         #will also log all failed attempts to log in
@@ -65,8 +65,8 @@ def login():
         else:
             logger.info("%s %s login successful", username, request.remote_addr)
             session['loggedin'] = True
-            session['id'] = account['id']
-            session['username'] = account['username']
+            session['id'] = account[1]
+            session['username'] = account[2]
             session['key'] = key
             return redirect(url_for('index2'))
 
@@ -90,8 +90,8 @@ parameters"""
         password = request.form['password']
         confirm = request.form['confirm-password'] #User Password Confirmation Variable
 
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = %s',(username,))
+        sql = "SELECT * FROM accounts WHERE username = %s"
+        cursor.execute(sql, (username,))
         exists = cursor.fetchone()
         if exists:
             message = "that account already exists"
@@ -117,9 +117,9 @@ parameters"""
         #database and redirect to login once registered
         else:
             #this cursor allows the actual interaction with the database
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('INSERT INTO accounts VALUES (NULL, %s, %s)', (username, password,))
-            mysql.connection.commit()
+            sql = "INSERT INTO accounts VALUES (NULL, %s, %s)"
+            cursor.execute(sql, (username, password,))
+            db.commit()
             message = 'You have successfully registered!'
             return redirect(url_for('login'))
 
@@ -129,7 +129,7 @@ parameters"""
     return render_template('register.html', message=message)
 
 
-
+#renders template for main chatroom
 @app.route('/chatroom', methods=['GET', 'POST'])
 def index2():
     
@@ -179,6 +179,7 @@ def check_list(password):
 def password_check(password):
     """This method will check that the password is within required specs"""
 
+    #used for password check
     len_error = len(password) < 12
     digit_error = re.search(r"\d", password) is None
     upper_error = re.search(r"[A-Z]", password) is None
